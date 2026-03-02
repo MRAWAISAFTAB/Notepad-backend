@@ -5,10 +5,7 @@ import router from "./Routes/userRoute.js"
 import "dotenv/config"
 import cors from 'cors'
 
-app.use(cors({
-    origin: 'https://notepad-frontend-two.vercel.app',
-    credentials: true
-}))
+app.use(cors())
 
 
 app.use(express.json());
