@@ -6,7 +6,7 @@ import "dotenv/config"
 import cors from 'cors'
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://notepad-frontend-two.vercel.app',
     credentials: true
 }))
 
