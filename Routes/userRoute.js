@@ -16,5 +16,15 @@ router.post("/change-password/:email", changePassword)
 
 
 
+// notepad crud
+import { getNotes, createNote, updateNote, deleteNote } from "../Controllers/noteController.js"
+
+router.get("/notes", isAuthenticated, getNotes)
+router.post("/notes", isAuthenticated, createNote)
+router.put("/notes/:id", isAuthenticated, updateNote)
+router.delete("/notes/:id", isAuthenticated, deleteNote)
+
+
+
 
 export default router;
