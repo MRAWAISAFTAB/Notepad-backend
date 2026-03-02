@@ -5,8 +5,15 @@ import router from "./Routes/userRoute.js"
 import "dotenv/config"
 import cors from 'cors'
 
-app.use(cors())
-
+app.use(
+    cors({
+      origin: [
+        "http://localhost:5173",
+        "https://notepad-frontend-two.vercel.app",
+      ],
+      credentials: true,
+    })
+  );
 
 app.use(express.json());
 Dbconnection();
