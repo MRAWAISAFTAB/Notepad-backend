@@ -11,34 +11,22 @@ export const registerUser = async (req, res) => {
     try {
         const { fullName, email, password } = req.body;
         if (!fullName || !email || !password) {
-            return res.status(400).json({
-                message: "Please fill all the fields"
-            });
+            return res.status(400).json({ message: "Please fill all the fields" });
         }
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(409).json({
-                message: "User Already exist"
-            });
+            return res.status(409).json({ message: "User Already exist" });
         }
-        const hadshedPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({
-            fullName,
-            email,
-            password: hadshedPassword
-        })
-        const token = jwt.sign({ id: newUser._id }, process.env.SECRECT_KEY, { expiresIn: "10m" })
-        verifyMail(token, email);
-        newUser.token = token;
-        await newUser.save()
-        return res.status(201).json({
-            message: "User Registered Successfully",
-            data: newUser
-        })
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const token = jwt.sign(
+            { fullName, email, password: hashedPassword },
+            process.env.SECRECT_KEY,
+            { expiresIn: "10m" }
+        )
+        await verifyMail(token, email);
+        return res.status(201).json({ message: "User Registered Successfully" })
     } catch (error) {
-        return res.status(500).json({
-            message: error.message
-        })
+        return res.status(500).json({ message: error.message })
     }
 }
 
@@ -46,45 +34,31 @@ export const Verification = async (req, res) => {
     try {
         const authHeader = req.headers.authorization
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({
-                success: false,
-                message: "Authorization token is missing or invalid"
-            })
+            return res.status(401).json({ message: "Authorization token is missing or invalid" })
         }
-
-
         const token = authHeader.split(" ")[1]
-
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.SECRECT_KEY)
         } catch (err) {
             if (err.name === "TokenExpiredError") {
-                return res.status(400).json({
-                    message: "The registration has expired"
-                })
+                return res.status(400).json({ message: "The registration has expired" })
             }
-            return res.status(400).json({
-                message: "token verification failed"
-            })
+            return res.status(400).json({ message: "token verification failed" })
         }
-        const user = await User.findById(decoded.id)
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found"
-            })
+        const existingUser = await User.findOne({ email: decoded.email })
+        if (existingUser) {
+            return res.status(409).json({ message: "User already verified" })
         }
-        user.token = null
-        user.isVerified = true
-        await user.save()
-
-        return res.status(200).json({
-            message: "Email Verified Successfully"
+        await User.create({
+            fullName: decoded.fullName,
+            email: decoded.email,
+            password: decoded.password,
+            isVerified: true
         })
+        return res.status(200).json({ message: "Email Verified Successfully" })
     } catch (error) {
-        return res.status(500).json({
-            message: error.message
-        })
+        return res.status(500).json({ message: error.message })
     }
 }
 
