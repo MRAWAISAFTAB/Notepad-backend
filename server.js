@@ -17,7 +17,9 @@ app.use(
     credentials: true,
   })
 );
-
+app.get("/", (req, res) => {
+    res.send({ message: "Backend is running!" });
+  });
 app.use(express.json());
 app.use("/api", router);
 
