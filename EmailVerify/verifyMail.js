@@ -33,10 +33,6 @@ export const verifyMail = async (token, email) => {
         subject: "Email Verification",
         html: htmlToSend,
     }
-    transporter.sendMail(mailConfiguration, function (error, info) {
-        if (error) {
-            throw new Error(error)
-        }
-        console.log("Email sent SucessFully");
-    })
+    await transporter.sendMail(mailConfiguration)
+    console.log("Email sent Successfully")
 }
