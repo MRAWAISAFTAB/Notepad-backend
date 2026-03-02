@@ -1,28 +1,25 @@
 import express from "express";
 import Dbconnection from "./DbConnection/Db.js";
+import router from "./Routes/userRoute.js";
+import "dotenv/config";
+import cors from 'cors';
+
 const app = express();
-import router from "./Routes/userRoute.js"
-import "dotenv/config"
-import cors from 'cors'
 
-app.use(
-    cors({
-      origin: [
-        "http://localhost:5173",
-        "https://notepad-frontend-two.vercel.app",
-      ],
-      credentials: true,
-    })
-  );
-
-app.use(express.json());
 Dbconnection();
 
-const Port = process.env.PORT;
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://notepad-frontend-two.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
-app.use("/api" , router)
+app.use(express.json());
+app.use("/api", router);
 
-app.listen(Port , () =>{
-    console.log(`Server running on ${Port}`);
-})
-
+// 🔹 REMOVE app.listen when deploying to Vercel
+export default app;
